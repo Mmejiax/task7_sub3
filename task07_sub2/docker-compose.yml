@@ -1,0 +1,35 @@
+version: '3.3'
+services:
+    web:
+        build: ./apka
+        # ports:
+        #   - "8080:8000"
+        environment:
+            REDIS_HOST: redis
+            REDIS_PORT: 6379
+        depends_on:
+            - redis
+    
+    redis:
+        image: "redis:alpine"
+        #redis = redis.Redis(host=os.environ.get('REDIS_HOST'), password=os.environ.get('REDIS_PASS'),
+        environment:
+         - ENV_REDIS_PASS="password"
+        ports:
+            - 6379:6379
+        volumes:
+            - dataRedis:/data
+
+
+    haproxy:
+       build: ./haproxy
+       container_name: haproxy
+       volumes:
+            - ./ssl2/:/etc/ssl/certs/
+       ports:
+         - "443:443"
+       depends_on:
+         - web
+
+volumes:
+   dataRedis:
