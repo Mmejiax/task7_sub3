@@ -1,0 +1,35 @@
+global
+
+defaults
+   mode http
+   timeout connect 500ms
+   timeout client 500ms
+   timeout server 500ms
+
+frontend stats
+   bind *:8080
+   stats enable
+   stats uri /
+   stats refresh 1s
+frontend myfrontend
+   
+   bind :80
+default_backend webservers
+
+
+   #acl has_web path_beg /web
+   #acl has_redis path_beg /redis
+   
+   #use_backend web if has_web
+   #use_backend redis if has_redis
+backend webservers
+   server web:8080 check
+
+   #default_backend web
+
+   #backend web
+   #server web web:81 check
+
+   #backend redis
+   #server redis redis:6379 check
+
